@@ -1,0 +1,35 @@
+<configuration>
+
+    <property name="HOME_LOG" value="logs/app.log"/>
+
+    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${HOME_LOG}</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/archived/app.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- each archived file, size max 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- total size of all archive files, if total size > 20GB, it will delete old archived file -->
+            <totalSizeCap>20GB</totalSizeCap>
+            <!-- 60 days to keep -->
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d [%t] [%X{X-B3-TraceId:-}, %X{X-B3-SpanId:-}, %X{X-Span-Export:-}] %m%n</pattern>
+        </encoder>
+    </appender>
+    
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+	<logger name="org.springframework.cloud.sleuth" level="TRACE"/>
+	<logger name="org.springframework.boot.autoconfigure.logging" level="INFO"/>
+	<logger name="org.springframework.cloud.sleuth.log" level="DEBUG"/>
+	<logger name="org.springframework.cloud.sleuth.trace" level="DEBUG"/>
+	<logger name="org.springframework.cloud.sleuth.instrument.rxjava" level="DEBUG"/>
+	<logger name="org.springframework.cloud.sleuth.instrument.reactor" level="TRACE"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="FILE-ROLLING"/>
+    </root>
+
+</configuration>
